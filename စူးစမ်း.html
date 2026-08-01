@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>အန်စာတုံး (အကြီး/အသေး & ဂဏန်း) ခန့်မှန်းဂိမ်း</title>
+    <!-- Tailwind CSS (Admin Panel) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-hover: #5A4AD1;
+            --success: #00B894;
+            --danger: #D63031;
+            --warning: #FDCB6E;
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pyidaungsu', 'Padauk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: #2D3436;
+        }
+
+        .player-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Top Wallet Bar */
+        .wallet-card {
+            background: linear-gradient(135deg, #1E272C, #0F172A);
+            color: #FFF;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Admin Quick Button with Notification Badge */
+        .admin-quick-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #6C5CE7;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .admin-quick-btn:hover {
+            background: #5A4AD1;
+            transform: scale(1.05);
+        }
+
+        /* Notification Badge Style */
+        .notif-badge {
+            background: #D63031;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid #FFF;
+            animation: pulse-ring 1.5s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(214, 48, 49, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(214, 48, 49, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); }
+        }
+
+        .wallet-title {
+            font-size: 12px;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+        }
+
+        .balance-display {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--warning);
+            margin: 4px 0 12px 0;
+            text-align: left;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .wallet-btn {
+            flex: 1;
+            padding: 8px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-deposit { background: var(--success); color: white; }
+        .btn-withdraw { background: #0984E3; color: white; }
+        .wallet-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Game Title */
+        h1 { font-size: 22px; margin-bottom: 5px; color: #2D3436; }
+
+        /* 3D DICE & SHADOW DESIGN */
+        .dice-area {
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            perspective: 800px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .dice {
+            width: 90px;
+            height: 90px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(145deg, #FFFFFF 0%, #F0F3F8 100%);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: 22px;
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            padding: 10px;
+            box-shadow: 
+                inset 0 0 10px rgba(0, 0, 0, 0.08),
+                inset -3px -3px 8px rgba(0, 0, 0, 0.15),
+                inset 3px 3px 8px rgba(255, 255, 255, 1),
+                0 8px 20px rgba(0,0,0,0.2);
+            backface-visibility: hidden;
+        }
+
+        .dot {
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle at 35% 35%, #434343, #000000);
+            border-radius: 50%;
+            align-self: center;
+            justify-self: center;
+            box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dot.red {
+            background: radial-gradient(circle at 35% 35%, #FF5252, #B71C1C);
+            box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.6), 0 0 8px rgba(229, 57, 53, 0.5);
+        }
+
+        .face-1 { transform: rotateY(0deg) translateZ(45px); }
+        .face-2 { transform: rotateY(90deg) translateZ(45px); }
+        .face-3 { transform: rotateY(180deg) translateZ(45px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(45px); }
+        .face-5 { transform: rotateX(90deg) translateZ(45px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(45px); }
+
+        .face-1 .dot:nth-child(1) { grid-area: 2 / 2; width: 22px; height: 22px; }
+        .face-2 .dot:nth-child(1) { grid-area: 1 / 1; }
+        .face-2 .dot:nth-child(2) { grid-area: 3 / 3; }
+        .face-3 .dot:nth-child(1) { grid-area: 1 / 1; }
+        .face-3 .dot:nth-child(2) { grid-area: 2 / 2; }
+        .face-3 .dot:nth-child(3) { grid-area: 3 / 3; }
+        .face-4 .dot:nth-child(1) { grid-area: 1 / 1; }
+        .face-4 .dot:nth-child(2) { grid-area: 1 / 3; }
+        .face-4 .dot:nth-child(3) { grid-area: 3 / 1; }
+        .face-4 .dot:nth-child(4) { grid-area: 3 / 3; }
+        .face-5 .dot:nth-child(1) { grid-area: 1 / 1; }
+        .face-5 .dot:nth-child(2) { grid-area: 1 / 3; }
+        .face-5 .dot:nth-child(3) { grid-area: 2 / 2; }
+        .face-5 .dot:nth-child(4) { grid-area: 3 / 1; }
+        .face-5 .dot:nth-child(5) { grid-area: 3 / 3; }
+        .face-6 .dot:nth-child(1) { grid-area: 1 / 1; }
+        .face-6 .dot:nth-child(2) { grid-area: 1 / 3; }
+        .face-6 .dot:nth-child(3) { grid-area: 2 / 1; }
+        .face-6 .dot:nth-child(4) { grid-area: 2 / 3; }
+        .face-6 .dot:nth-child(5) { grid-area: 3 / 1; }
+        .face-6 .dot:nth-child(6) { grid-area: 3 / 3; }
+
+        .dice-shadow {
+            width: 80px;
+            height: 18px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 50%;
+            margin-top: 15px;
+            filter: blur(6px);
+            transition: all 1.2s ease-out;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 10px 0 6px 0;
+            color: #636E72;
+            text-align: left;
+        }
+
+        .big-small-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .bs-btn {
+            flex: 1;
+            padding: 12px 0;
+            background: #F1F2F6;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #2D3436;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bs-btn span.sub {
+            font-size: 11px;
+            color: #7F8C8D;
+            margin-top: 2px;
+        }
+
+        .bs-btn.selected {
+            background: #00B894;
+            color: white;
+            border-color: #00A383;
+            box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
+        }
+
+        .bs-btn.selected span.sub { color: #E8F8F5; }
+
+        .number-selector {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .num-btn {
+            flex: 1;
+            padding: 10px 0;
+            background: #F1F2F6;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2D3436;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .num-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-hover);
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+        }
+
+        .quick-bet-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .quick-bet-btn {
+            padding: 8px 0;
+            background: #F1F2F6;
+            border: 1px solid #DFE6E9;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2D3436;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-bet-btn:hover, .quick-bet-btn.active {
+            background: #6C5CE7;
+            color: white;
+            border-color: #5A4AD1;
+            box-shadow: 0 2px 6px rgba(108, 92, 231, 0.3);
+        }
+
+        .bet-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .bet-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #DFE6E9;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .roll-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #6C5CE7, #8E44AD);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.3);
+            transition: all 0.2s;
+        }
+
+        .roll-btn:disabled {
+            background: #B2BEC3;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .message-box {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-box.win { background: #E8F8F5; color: #27AE60; }
+        .message-box.lose { background: #FDEDEC; color: #E74C3C; }
+        .message-box.info { background: #EBF5FB; color: #2980B9; }
+
+        .martingale-card {
+            background: #FFF5F5;
+            border: 1px solid #FEB2B2;
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+            text-align: left;
+        }
+
+        .martingale-card.show { display: block; }
+
+        .martingale-action-btn {
+            background: #E53E3E;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 6px;
+            width: 100%;
+        }
+
+        .copy-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .copy-btn.kbz { background: #005691; color: white; }
+        .copy-btn.wave { background: #FFD400; color: black; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 { font-size: 18px; color: #2D3436; }
+        .close-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 2px solid #E4E7EB;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover, .payment-option.active {
+            border-color: var(--primary);
+            background: #F8F9FA;
+        }
+
+        .payment-badge {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: white; font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .kbz { background: #005691; }
+        .wave { background: #FFD400; color: #000; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #636E72; margin-bottom: 4px; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #CCC; border-radius: 8px; font-size: 14px; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PLAYER INTERFACE -->
+    <div id="player-view" class="player-wrapper">
+        <div class="container">
+            <div class="wallet-card">
+                <!-- 🔥 ADMIN BUTTON WITH NOTIFICATION BADGE 🔥 -->
+                <button class="admin-quick-btn" onclick="openAdminView()">
+                    👑 Admin <span id="adminNotifBadge" class="notif-badge" style="display:none;">0</span>
+                </button>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; padding-right: 85px;">
+                    <div class="wallet-title">လက်ကျန် ငွေပမာဏ</div>
+                    <div style="font-size: 11px; color: #FDCB6E; background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 10px; font-weight: bold;">🆔 <span id="displayUID">UID-000000</span></div>
+                </div>
+                <div class="balance-display"><span id="userBalance">5,000</span> <small style="font-size: 16px;">Ks</small></div>
+                <div class="wallet-actions">
+                    <button class="wallet-btn btn-deposit" onclick="openModal('depositModal')">+ ငွေသွင်းမည်</button>
+                    <button class="wallet-btn btn-withdraw" onclick="openModal('withdrawModal')">- ငွေထုတ်မည်</button>
+                </div>
+            </div>
+
+            <h1>🎲 အန်စာတုံး ခန့်မှန်းဂိမ်း</h1>
+            <p style="font-size: 12px; color: #636E72; margin-bottom: 10px;">
+                ဂဏန်းသီးသန့် (<strong>၃ ဆ</strong>) | အကြီး/အသေး (<strong>၁ ဆ</strong>)
+            </p>
+
+            <!-- 3D DICE AREA -->
+            <div class="dice-area" id="diceContainer">
+                <div class="dice" id="dice">
+                    <div class="dice-face face-1"><div class="dot red"></div></div>
+                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                    <div class="dice-face face-4"><div class="dot red"></div><div class="dot red"></div><div class="dot red"></div><div class="dot red"></div></div>
+                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+                <div class="dice-shadow"></div>
+            </div>
+
+            <div>
+                <div class="section-label">၁။ အကြီး / အသေး ရွေးရန် (၁ ဆ ရမည်):</div>
+                <div class="big-small-selector">
+                    <button class="bs-btn" id="btn-small" onclick="selectBet('small')">
+                        🔹 အသေး
+                        <span class="sub">(1, 2, 3)</span>
+                    </button>
+                    <button class="bs-btn" id="btn-big" onclick="selectBet('big')">
+                        🔸 အကြီး
+                        <span class="sub">(4, 5, 6)</span>
+                    </button>
+                </div>
+
+                <div class="section-label">၂။ သို့မဟုတ် ဂဏန်းသီးသန့် ရွေးရန် (၃ ဆ ရမည်):</div>
+                <div class="number-selector">
+                    <button class="num-btn" onclick="selectBet('number', 1)">1</button>
+                    <button class="num-btn" onclick="selectBet('number', 2)">2</button>
+                    <button class="num-btn" onclick="selectBet('number', 3)">3</button>
+                    <button class="num-btn" onclick="selectBet('number', 4)">4</button>
+                    <button class="num-btn" onclick="selectBet('number', 5)">5</button>
+                    <button class="num-btn" onclick="selectBet('number', 6)">6</button>
+                </div>
+
+                <div class="section-label">၃။ လောင်းကြေး ပမာဏ ရွေးရန် (Quick Bet):</div>
+                <div class="quick-bet-grid">
+                    <button type="button" class="quick-bet-btn" onclick="setBetAmount(100)">100 Ks</button>
+                    <button type="button" class="quick-bet-btn" onclick="setBetAmount(500)">500 Ks</button>
+                    <button type="button" class="quick-bet-btn active" onclick="setBetAmount(1000)">1000 Ks</button>
+                    <button type="button" class="quick-bet-btn" onclick="setBetAmount(1500)">1500 Ks</button>
+                    <button type="button" class="quick-bet-btn" onclick="setBetAmount(3000)">3000 Ks</button>
+                    <button type="button" class="quick-bet-btn" onclick="setBetAmount(5000)">5000 Ks</button>
+                </div>
+
+                <div class="bet-input-group">
+                    <span style="font-size: 13px; font-weight: 600;">စိတ်ကြိုက် လောင်းကြေး (Ks):</span>
+                    <input type="number" id="betAmount" value="1000" min="100" step="100">
+                </div>
+
+                <button class="roll-btn" id="rollBtn" onclick="playGame()">လှည့်မည် 🎲</button>
+            </div>
+
+            <div class="message-box info" id="msgBox">
+                🎁 5,000 Ks ဘောနပ်စ် ရရှိထားပါသည်။ ဂိမ်းဆော့ရန် အနည်းဆုံး 10,000 Ks စတင်ဖြည့်သွင်းပေးပါ။
+            </div>
+
+            <!-- MARTINGALE CARD -->
+            <div id="martingaleCard" class="martingale-card">
+                <div style="font-size: 12px; font-weight: bold; color: #C53030; margin-bottom: 4px;">
+                    ⚡ ဇလိုက်နည်း (Martingale Strategy) အကြံပြုချက်:
+                </div>
+                <div style="font-size: 11px; color: #4A5568; line-height: 1.4;" id="martingaleDesc">
+                    ရှုံးသွားသော လောင်းကြေးအတွက် အရှုံးကျေပြီး အမြတ်ပါရရှိရန် နောက်တစ်ကြိမ်တွင် လောင်းကြေးကို ၂ ဆ တိုးလောင်းပါ။
+                </div>
+                <button type="button" class="martingale-action-btn" id="martingaleBtn" onclick="applyMartingale()">
+                    ⚡ ဇလိုက်မည် (2,000 Ks ပြောင်းမည်)
+                </button>
+                <div style="margin-top: 8px; border-top: 1px dashed #FEB2B2; padding-top: 6px; font-size: 10px; color: #742A2A;">
+                    <strong>📊 အရှုံးကျေ ဇလိုက်ဇယား အဆင့်များ:</strong>
+                    <div id="martingaleSteps" style="display: flex; gap: 4px; margin-top: 4px; text-align: center;"></div>
+                </div>
+            </div>
+
+            <!-- PLAYER LOGS -->
+            <div style="margin-top: 20px; border-top: 2px dashed #DFE6E9; padding-top: 15px; text-align: left;">
+                <div style="margin-bottom: 15px;">
+                    <div class="section-label" style="font-weight: bold; color: #2D3436; margin-bottom: 8px;">📊 အကြီး/အသေး ရလဒ်မှတ်တမ်း:</div>
+                    <div id="player-dice-history" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; min-height: 35px; align-items: center;">
+                        <span style="font-size: 12px; color: #B2BEC3;">မှတ်တမ်း မရှိသေးပါ။</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                    <button onclick="switchPlayerTab('bet')" id="ptab-btn-bet" style="flex:1; padding: 7px; font-size: 11px; font-weight: bold; border: none; border-radius: 8px; background: #6C5CE7; color: white; cursor: pointer;">လောင်းကြေးမှတ်တမ်း</button>
+                    <button onclick="switchPlayerTab('deposit')" id="ptab-btn-deposit" style="flex:1; padding: 7px; font-size: 11px; font-weight: bold; border: none; border-radius: 8px; background: #E4E7EB; color: #2D3436; cursor: pointer;">ငွေဖြည့်မှတ်တမ်း</button>
+                    <button onclick="switchPlayerTab('withdraw')" id="ptab-btn-withdraw" style="flex:1; padding: 7px; font-size: 11px; font-weight: bold; border: none; border-radius: 8px; background: #E4E7EB; color: #2D3436; cursor: pointer;">ငွေထုတ်မှတ်တမ်း</button>
+                </div>
+
+                <div id="ptab-bet" style="max-height: 160px; overflow-y: auto; font-size: 12px; background: #F8F9FA; border-radius: 10px; padding: 10px; border: 1px solid #DFE6E9;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #DFE6E9; color: #636E72; font-size: 11px;">
+                                <th style="padding: 4px;">ရွေးချယ်မှု</th>
+                                <th style="padding: 4px;">အန်စာတုံး</th>
+                                <th style="padding: 4px;">ပမာဏ</th>
+                                <th style="padding: 4px;">ရလဒ်</th>
+                            </tr>
+                        </thead>
+                        <tbody id="player-bet-history-list">
+                            <tr><td colspan="4" style="padding: 10px; color: #B2BEC3;">မှတ်တမ်း မရှိသေးပါ။</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="ptab-deposit" style="display: none; max-height: 160px; overflow-y: auto; font-size: 12px; background: #F8F9FA; border-radius: 10px; padding: 10px; border: 1px solid #DFE6E9;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #DFE6E9; color: #636E72; font-size: 11px;">
+                                <th style="padding: 4px;">နည်းလမ်း</th>
+                                <th style="padding: 4px;">ပမာဏ</th>
+                                <th style="padding: 4px;">အခြေအနေ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="player-deposit-history-list">
+                            <tr><td colspan="3" style="padding: 10px; color: #B2BEC3;">မှတ်တမ်း မရှိသေးပါ။</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="ptab-withdraw" style="display: none; max-height: 160px; overflow-y: auto; font-size: 12px; background: #F8F9FA; border-radius: 10px; padding: 10px; border: 1px solid #DFE6E9;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #DFE6E9; color: #636E72; font-size: 11px;">
+                                <th style="padding: 4px;">အသေးစိတ်</th>
+                                <th style="padding: 4px;">ပမာဏ</th>
+                                <th style="padding: 4px;">အခြေအနေ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="player-withdraw-history-list">
+                            <tr><td colspan="3" style="padding: 10px; color: #B2BEC3;">မှတ်တမ်း မရှိသေးပါ။</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💵 ငွေသွင်းရန် (Deposit)</h3>
+                <button class="close-btn" onclick="closeModal('depositModal')">&times;</button>
+            </div>
+
+            <div class="payment-option active" onclick="setPayment('KBZPay')">
+                <div class="payment-badge kbz">KPay</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: bold; font-size: 14px;">KBZPay မှ ငွေသွင်းမည်</div>
+                    <div style="font-size: 11px; color: #636E72;">09651513302 (EiThazinphyo)</div>
+                </div>
+                <button type="button" class="copy-btn kbz" onclick="copyPhone('09651513302', event)">Copy</button>
+            </div>
+
+            <div class="payment-option" onclick="setPayment('WaveMoney')">
+                <div class="payment-badge wave">Wave</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: bold; font-size: 14px;">Wave Money မှ ငွေသွင်းမည်</div>
+                    <div style="font-size: 11px; color: #636E72;">09793846472 (Hteinlinaung)</div>
+                </div>
+                <button type="button" class="copy-btn wave" onclick="copyPhone('09793846472', event)">Copy</button>
+            </div>
+
+            <div class="form-group">
+                <label>သွင်းမည့် ပမာဏ (Ks) - [ အနည်းဆုံး 10,000 Ks ]:</label>
+                <input type="number" id="depositAmount" placeholder="ဥပမာ - 10000" min="10000">
+            </div>
+
+            <div class="form-group">
+                <label>လုပ်ငန်းစဉ်အမှတ် (Last 6 Digits Transaction ID):</label>
+                <input type="text" id="txId" placeholder="123456" maxlength="6">
+            </div>
+
+            <button class="submit-btn" onclick="submitDeposit()">ငွေသွင်းရန် တောင်းဆိုမည်</button>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal (With KPay/Wave Buttons + Name + Phone) -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🏦 ငွေထုတ်ရန် (Withdraw)</h3>
+                <button class="close-btn" onclick="closeModal('withdrawModal')">&times;</button>
+            </div>
+
+            <div class="section-label" style="margin-top: 0;">၁။ ငွေထုတ်ယူမည့် နည်းလမ်း ရွေးပါ:</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <div class="payment-option active" id="w-kbz" onclick="setWithdrawPayment('KBZPay')" style="flex: 1; margin-bottom: 0;">
+                    <div class="payment-badge kbz">KPay</div>
+                    <div style="font-weight: bold; font-size: 13px;">KBZPay</div>
+                </div>
+                <div class="payment-option" id="w-wave" onclick="setWithdrawPayment('WaveMoney')" style="flex: 1; margin-bottom: 0;">
+                    <div class="payment-badge wave">Wave</div>
+                    <div style="font-weight: bold; font-size: 13px;">Wave</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>၂။ အကောင့်ပိုင်ရှင် နာမည်:</label>
+                <input type="text" id="withdrawName" placeholder="ဥပမာ - Daw Aye Aye">
+            </div>
+
+            <div class="form-group">
+                <label>၃။ ငွေထုတ်ယူမည့် ဖုန်းနံပါတ်:</label>
+                <input type="text" id="withdrawPhone" placeholder="09xxxxxxxxx">
+            </div>
+
+            <div class="form-group">
+                <label>၄။ ထုတ်ယူမည့် ငွေပမာဏ (Ks):</label>
+                <input type="number" id="withdrawAmount" placeholder="အနည်းဆုံး 1000 Ks">
+            </div>
+
+            <button class="submit-btn" style="background: #0984E3;" onclick="submitWithdraw()">ငွေထုတ်ရန် တောင်းဆိုမည်</button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD INTERFACE -->
+    <div id="admin-view" class="hidden min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">
+        <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
+            <div>
+                <div class="p-5 flex items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">🎲</div>
+                        <div>
+                            <h1 class="font-bold text-lg leading-tight text-white">Dice Admin</h1>
+                            <span class="text-xs text-indigo-400 font-medium">Control System v2.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="p-4 space-y-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-indigo-600 text-white shadow-md shadow-indigo-600/20">📊 Dashboard</button>
+                    <button onclick="switchTab('control')" id="nav-control" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">⚙️ Game Control (ဂျင်း)</button>
+                    
+                    <!-- SIDEBAR FINANCE BUTTON WITH NOTIFICATION BADGE -->
+                    <button onclick="switchTab('finance')" id="nav-finance" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+                        <span>💳 ငွေသွင်း/ငွေထုတ် စာရင်း</span>
+                        <span id="adminSidebarNotif" class="bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+                    </button>
+
+                    <button onclick="switchTab('players')" id="nav-players" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">👥 Player Management</button>
+                    <button onclick="switchTab('history')" id="nav-history" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">📜 Bet History</button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 m-3 space-y-3">
+                <button onclick="exitAdminView()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2.5 rounded-xl font-bold transition border border-slate-700">⬅️ Exit to Game Screen</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-slate-800">
+                <div>
+                    <h2 id="page-title" class="text-2xl font-bold text-white">Dashboard Overview</h2>
+                    <p class="text-sm text-slate-400">Dice Game အချက်အလက်များနှင့် ထိန်းချုပ်မှုစနစ်</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">S</div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-200">Super Admin</div>
+                        <div class="text-xs text-emerald-400">Direct Access Unlocked</div>
+                    </div>
+                </div>
+            </header>
+
+            <section id="tab-dashboard" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <span class="text-xs font-semibold text-slate-400 uppercase">Player Balance</span>
+                        <div id="admin-stat-balance" class="text-2xl font-bold text-amber-400 mt-1">5,000 Ks</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <span class="text-xs font-semibold text-slate-400 uppercase">Total Spins Logged</span>
+                        <div id="admin-stat-spins" class="text-2xl font-bold text-white mt-1">0</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <span class="text-xs font-semibold text-slate-400 uppercase">Pending Requests</span>
+                        <div id="admin-stat-pending" class="text-2xl font-bold text-emerald-400 mt-1">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-control" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl">
+                    <h3 class="text-lg font-bold text-white mb-2">✨ Next Dice Outcome (ဂျင်းထည့်/ဂဏန်းပြင်ရန်)</h3>
+                    <p class="text-xs text-slate-400 mb-6">ကစားသူ၏ နောက်လာမည့် အန်စာတုံးရလဒ်ကို မိမိစိတ်ကြိုက် ဂဏန်းထွက်အောင် ပြင်ဆင်ထားနိုင်သည်။</p>
+
+                    <form onsubmit="applyOverride(event)" class="space-y-5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="controlMode" value="auto" class="peer sr-only" checked onchange="toggleControlMode(this.value)">
+                                <div class="p-3 text-center rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 peer-checked:text-indigo-400 font-medium text-sm">🤖 Auto (Random)</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="controlMode" value="manual" class="peer sr-only" onchange="toggleControlMode(this.value)">
+                                <div class="p-3 text-center rounded-xl bg-slate-950 border border-slate-800 peer-checked:border-indigo-500 peer-checked:bg-indigo-600/10 peer-checked:text-indigo-400 font-medium text-sm">🎯 Manual Force Outcome</div>
+                            </label>
+                        </div>
+
+                        <div id="manual-dice-inputs" class="space-y-3 opacity-50 pointer-events-none transition-all">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Select Forced Number (1 - 6)</label>
+                            <select id="forced-dice-val" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white font-bold text-center text-lg">
+                                <option value="1">1 (အသေး)</option>
+                                <option value="2">2 (အသေး)</option>
+                                <option value="3">3 (အသေး)</option>
+                                <option value="4">4 (အကြီး)</option>
+                                <option value="5">5 (အကြီး)</option>
+                                <option value="6">6 (အကြီး)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">💾 Save Forced Outcome</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="tab-finance" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">📥 Pending Deposit / Withdrawal Requests</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-800">
+                                    <th class="pb-3 px-3">Type</th>
+                                    <th class="pb-3 px-3">Amount</th>
+                                    <th class="pb-3 px-3">Method / Name / Phone / TxID</th>
+                                    <th class="pb-3 px-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-finance-table" class="divide-y divide-slate-800 text-slate-300">
+                                <tr>
+                                    <td colspan="4" class="py-4 text-center text-slate-500">ယခုအချိန်တွင် တောင်းဆိုမှု မရှိသေးပါ။</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-players" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Player List</h3>
+                    <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <div class="text-white font-bold">Player (<span id="admin-player-uid">UID-000000</span>)</div>
+                            <div class="text-xs text-slate-400" id="admin-player-status">Deposit Unlocked: No</div>
+                        </div>
+                        <div class="text-amber-400 font-bold text-lg" id="admin-player-bal">5,000 Ks</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-history" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Completed Game Logs</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-800">
+                                    <th class="pb-3 px-3">Bet Choice</th>
+                                    <th class="pb-3 px-3">Dice Result</th>
+                                    <th class="pb-3 px-3">Bet Amount</th>
+                                    <th class="pb-3 px-3">Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-history-table" class="divide-y divide-slate-800 text-slate-300"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // UID Generation & Welcome Bonus
+        let userUID = localStorage.getItem('game_user_uid');
+        if (!userUID) {
+            userUID = 'UID-' + Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('game_user_uid', userUID);
+            localStorage.setItem('has_deposited_10k', 'false');
+            localStorage.setItem('game_real_balance', 5000); 
+        }
+
+        let balance = parseInt(localStorage.getItem('game_real_balance'));
+        if (isNaN(balance)) balance = 5000;
+
+        let hasDeposited10k = localStorage.getItem('has_deposited_10k') === 'true';
+
+        let selectedBetType = null;
+        let selectedValue = null;
+        let isRolling = false;
+        
+        let selectedMethod = 'KBZPay';
+        let selectedWithdrawMethod = 'KBZPay';
+        
+        let nextMartingaleAmount = 0;
+        let forcedOutcome = null;
+        let totalSpins = 0;
+        let pendingCount = 0;
+
+        const faceRotations = {
+            1: { x: 0, y: 0 },
+            2: { x: 0, y: -90 },
+            3: { x: 0, y: -180 },
+            4: { x: 0, y: 90 },
+            5: { x: -90, y: 0 },
+            6: { x: 90, y: 0 }
+        };
+
+        // Initialize UI
+        document.getElementById('displayUID').innerText = userUID;
+        document.getElementById('admin-player-uid').innerText = userUID;
+        updateBalanceDisplay();
+
+        function updateBalanceDisplay() {
+            document.getElementById('userBalance').innerText = balance.toLocaleString();
+            document.getElementById('admin-player-bal').innerText = balance.toLocaleString() + ' Ks';
+            document.getElementById('admin-stat-balance').innerText = balance.toLocaleString() + ' Ks';
+            document.getElementById('admin-player-status').innerText = 'Deposit Unlocked: ' + (hasDeposited10k ? 'Yes (Unlocked)' : 'No (Pending 10,000 Ks)');
+            localStorage.setItem('game_real_balance', balance);
+        }
+
+        // 🔥 NOTIFICATION BADGE UPDATE FUNCTION 🔥
+        function updateNotifBadge() {
+            const badge = document.getElementById('adminNotifBadge');
+            const sidebarBadge = document.getElementById('adminSidebarNotif');
+            document.getElementById('admin-stat-pending').innerText = pendingCount;
+
+            if (pendingCount > 0) {
+                badge.innerText = pendingCount;
+                badge.style.display = 'inline-block';
+
+                if (sidebarBadge) {
+                    sidebarBadge.innerText = pendingCount;
+                    sidebarBadge.classList.remove('hidden');
+                }
+            } else {
+                badge.style.display = 'none';
+                if (sidebarBadge) {
+                    sidebarBadge.classList.add('hidden');
+                }
+            }
+        }
+
+        function setBetAmount(amt) {
+            document.getElementById('betAmount').value = amt;
+            document.querySelectorAll('.quick-bet-btn').forEach(btn => {
+                if (btn.innerText.includes(amt.toString())) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function copyPhone(phoneNum, e) {
+            if (e) e.stopPropagation();
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(phoneNum).then(() => {
+                    alert(`ဖုန်းနံပါတ် ${phoneNum} ကို Copy ကူးပြီးပါပြီ!`);
+                });
+            } else {
+                const textInput = document.createElement('input');
+                textInput.value = phoneNum;
+                document.body.appendChild(textInput);
+                textInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(textInput);
+                alert(`ဖုန်းနံပါတ် ${phoneNum} ကို Copy ကူးပြီးပါပြီ!`);
+            }
+        }
+
+        function switchPlayerTab(tabName) {
+            ['bet', 'deposit', 'withdraw'].forEach(t => {
+                document.getElementById(`ptab-${t}`).style.display = t === tabName ? 'block' : 'none';
+                const btn = document.getElementById(`ptab-btn-${t}`);
+                if (t === tabName) {
+                    btn.style.background = '#6C5CE7';
+                    btn.style.color = 'white';
+                } else {
+                    btn.style.background = '#E4E7EB';
+                    btn.style.color = '#2D3436';
+                }
+            });
+        }
+
+        function selectBet(type, val = null) {
+            if (isRolling) return;
+
+            selectedBetType = type;
+            selectedValue = val;
+
+            document.getElementById('btn-small').classList.remove('selected');
+            document.getElementById('btn-big').classList.remove('selected');
+            document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('selected'));
+
+            if (type === 'small') {
+                document.getElementById('btn-small').classList.add('selected');
+            } else if (type === 'big') {
+                document.getElementById('btn-big').classList.add('selected');
+            } else if (type === 'number' && val !== null) {
+                const numButtons = document.querySelectorAll('.num-btn');
+                if (numButtons[val - 1]) {
+                    numButtons[val - 1].classList.add('selected');
+                }
+            }
+        }
+
+        function playGame() {
+            if (isRolling) return;
+
+            if (!hasDeposited10k) {
+                alert("⚠️ ကြိုဆိုပါသည်! 5,000 Ks ဘောနပ်စ် ရရှိထားပါသည်။\n\nဂိမ်းစတင်ဆော့ကစားနိုင်ရန် အနည်းဆုံး 10,000 Ks ငွေစတင်ဖြည့်သွင်းပေးရပါမည်။");
+                showMessage('⚠️ 5,000 Ks ဘောနပ်စ် ရရှိထားပါသည်။ ဂိမ်းဆော့ရန် အနည်းဆုံး 10,000 Ks ငွေစတင်ဖြည့်သွင်းပေးပါ။', 'lose');
+                openModal('depositModal');
+                return;
+            }
+
+            const betAmount = parseInt(document.getElementById('betAmount').value);
+
+            if (!selectedBetType) {
+                showMessage('ကျေးဇူးပြု၍ အကြီး/အသေး သို့မဟုတ် ဂဏန်းတစ်လုံး ရွေးပါ!', 'lose');
+                return;
+            }
+
+            if (isNaN(betAmount) || betAmount < 100) {
+                showMessage('အနည်းဆုံး လောင်းကြေး ၁၀၀ ကျပ် လိုအပ်ပါသည်။', 'lose');
+                return;
+            }
+
+            if (betAmount > balance) {
+                showMessage('လက်ကျန်ငွေ မလုံလောက်ပါ။ ငွေသွင်းပေးပါ။', 'lose');
+                return;
+            }
+
+            isRolling = true;
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('martingaleCard').classList.remove('show');
+            document.getElementById('diceContainer').classList.add('rolling');
+            showMessage('အန်စာတုံး လှည့်နေပါသည်...', 'info');
+
+            let resultNum;
+            if (forcedOutcome !== null) {
+                resultNum = forcedOutcome;
+                forcedOutcome = null;
+            } else {
+                resultNum = Math.floor(Math.random() * 6) + 1;
+            }
+
+            const dice = document.getElementById('dice');
+            const target = faceRotations[resultNum];
+
+            const extraX = (Math.floor(Math.random() * 3) + 4) * 360;
+            const extraY = (Math.floor(Math.random() * 3) + 4) * 360;
+
+            dice.style.transform = `rotateX(${target.x + extraX}deg) rotateY(${target.y + extraY}deg)`;
+
+            setTimeout(() => {
+                isRolling = false;
+                document.getElementById('rollBtn').disabled = false;
+                document.getElementById('diceContainer').classList.remove('rolling');
+                totalSpins++;
+                document.getElementById('admin-stat-spins').innerText = totalSpins;
+
+                let isWin = false;
+                let multiplier = 0;
+                let betDisplayLabel = '';
+
+                if (selectedBetType === 'number') {
+                    betDisplayLabel = `ဂဏန်း [ ${selectedValue} ]`;
+                    if (resultNum === selectedValue) {
+                        isWin = true;
+                        multiplier = 3;
+                    }
+                } else if (selectedBetType === 'small') {
+                    betDisplayLabel = '🔹 အသေး (1-3)';
+                    if ([1, 2, 3].includes(resultNum)) {
+                        isWin = true;
+                        multiplier = 1;
+                    }
+                } else if (selectedBetType === 'big') {
+                    betDisplayLabel = '🔸 အကြီး (4-6)';
+                    if ([4, 5, 6].includes(resultNum)) {
+                        isWin = true;
+                        multiplier = 1;
+                    }
+                }
+
+                let outcomeText = '';
+                const resultCategory = resultNum <= 3 ? 'အသေး' : 'အကြီး';
+
+                if (isWin) {
+                    const winAmount = betAmount * multiplier;
+                    balance += winAmount;
+                    showMessage(`🎉 မှန်ကန်ပါသည်! ${resultNum} (${resultCategory}) ထွက်ပါသည်။ +${winAmount.toLocaleString()} Ks (x${multiplier}) ရရှိပါသည်။`, 'win');
+                    outcomeText = `<span class="text-emerald-400 font-bold">+${winAmount.toLocaleString()} Ks (WIN)</span>`;
+                    document.getElementById('martingaleCard').classList.remove('show');
+                } else {
+                    balance -= betAmount;
+                    showMessage(`❌ မကိုက်ညီပါ။ ရလဒ်မှာ ${resultNum} (${resultCategory}) ဖြစ်ပါသည်။ -${betAmount.toLocaleString()} Ks`, 'lose');
+                    outcomeText = `<span class="text-rose-400 font-bold">-${betAmount.toLocaleString()} Ks (LOSS)</span>`;
+
+                    showMartingaleSuggestion(betAmount);
+                }
+                
+                updateBalanceDisplay();
+
+                // Admin Logs
+                const historyTable = document.getElementById('admin-history-table');
+                const row = `<tr>
+                    <td class="py-3 px-3 font-bold text-amber-400">${betDisplayLabel}</td>
+                    <td class="py-3 px-3 font-bold text-indigo-400">[ ${resultNum} ] (${resultCategory})</td>
+                    <td class="py-3 px-3 font-semibold">${betAmount.toLocaleString()} Ks</td>
+                    <td class="py-3 px-3">${outcomeText}</td>
+                </tr>`;
+                historyTable.innerHTML = row + historyTable.innerHTML;
+
+                // Player Big/Small Result Roadmap
+                const playerDiceHist = document.getElementById('player-dice-history');
+                if (playerDiceHist.innerHTML.includes('မှတ်တမ်း မရှိသေးပါ')) {
+                    playerDiceHist.innerHTML = '';
+                }
+                const isSmall = resultNum <= 3;
+                const badgeBg = isSmall ? '#0984E3' : '#E67E22';
+                const badgeLabel = isSmall ? `🔹${resultNum} သေး` : `🔸${resultNum} ကြီး`;
+                playerDiceHist.innerHTML = `<span style="background: ${badgeBg}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; white-space: nowrap;">${badgeLabel}</span>` + playerDiceHist.innerHTML;
+
+                // Player Bet History
+                const playerBetList = document.getElementById('player-bet-history-list');
+                if (playerBetList.innerHTML.includes('မှတ်တမ်း မရှိသေးပါ')) {
+                    playerBetList.innerHTML = '';
+                }
+                const playerOutcomeHtml = isWin ? 
+                    `<span style="color: #27AE60; font-weight: bold;">+${(betAmount * multiplier).toLocaleString()} Ks</span>` : 
+                    `<span style="color: #E74C3C; font-weight: bold;">-${betAmount.toLocaleString()} Ks</span>`;
+
+                playerBetList.innerHTML = `<tr style="border-bottom: 1px solid #DFE6E9;">
+                    <td style="padding: 6px; font-weight: bold;">${betDisplayLabel}</td>
+                    <td style="padding: 6px; font-weight: bold;">${resultNum} (${resultCategory})</td>
+                    <td style="padding: 6px;">${betAmount.toLocaleString()} Ks</td>
+                    <td style="padding: 6px;">${playerOutcomeHtml}</td>
+                </tr>` + playerBetList.innerHTML;
+
+            }, 1200);
+        }
+
+        function showMartingaleSuggestion(lostAmt) {
+            nextMartingaleAmount = lostAmt * 2;
+            const card = document.getElementById('martingaleCard');
+            const desc = document.getElementById('martingaleDesc');
+            const btn = document.getElementById('martingaleBtn');
+            const steps = document.getElementById('martingaleSteps');
+
+            desc.innerText = `ယခုရှုံးသွားသော ${lostAmt.toLocaleString()} Ks ကို အရှုံးကျေပြီး အမြတ်ပါပြန်ရရန် နောက်တစ်ကြိမ်တွင် ၂ ဆ တိုး၍ လောင်းပါ:`;
+            btn.innerText = `⚡ ဇလိုက်မည် (${nextMartingaleAmount.toLocaleString()} Ks သို့ပြောင်းမည်)`;
+
+            steps.innerHTML = `
+                <div style="flex:1; background:#FED7D7; padding:3px; border-radius:6px; font-weight:bold;">1x: ${lostAmt.toLocaleString()}</div>
+                <div style="flex:1; background:#FEB2B2; padding:3px; border-radius:6px; font-weight:bold; color:#9B2C2C;">2x: ${(lostAmt*2).toLocaleString()}</div>
+                <div style="flex:1; background:#FC8181; padding:3px; border-radius:6px; font-weight:bold; color:white;">4x: ${(lostAmt*4).toLocaleString()}</div>
+                <div style="flex:1; background:#E53E3E; padding:3px; border-radius:6px; font-weight:bold; color:white;">8x: ${(lostAmt*8).toLocaleString()}</div>
+            `;
+
+            card.classList.add('show');
+        }
+
+        function applyMartingale() {
+            if (nextMartingaleAmount > 0) {
+                setBetAmount(nextMartingaleAmount);
+                document.getElementById('martingaleCard').classList.remove('show');
+                showMessage(`⚡ ဇလိုက်လောင်းကြေး ${nextMartingaleAmount.toLocaleString()} Ks ချိန်ပေးထားပါသည်။ အနီ/အပြာ ရွေး၍ လှည့်နိုင်ပါပြီ!`, 'info');
+            }
+        }
+
+        function showMessage(msg, type) {
+            const msgBox = document.getElementById('msgBox');
+            msgBox.className = `message-box ${type}`;
+            msgBox.innerText = msg;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function setPayment(method) {
+            selectedMethod = method;
+            document.querySelectorAll('#depositModal .payment-option').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function setWithdrawPayment(method) {
+            selectedWithdrawMethod = method;
+            document.getElementById('w-kbz').classList.remove('active');
+            document.getElementById('w-wave').classList.remove('active');
+            if (method === 'KBZPay') {
+                document.getElementById('w-kbz').classList.add('active');
+            } else {
+                document.getElementById('w-wave').classList.add('active');
+            }
+        }
+
+        function submitDeposit() {
+            const amount = parseInt(document.getElementById('depositAmount').value);
+            const txId = document.getElementById('txId').value;
+
+            if (isNaN(amount) || amount < 10000) {
+                alert('အနည်းဆုံး ၁၀,၀၀၀ ကျပ် စတင်သွင်းရပါမည်။');
+                return;
+            }
+            if (txId.length < 6) {
+                alert('Transaction ID အမှန် ၆ လုံး ထည့်ပေးပါ။');
+                return;
+            }
+
+            const reqId = Date.now();
+            addFinanceRequest('DEPOSIT', amount, `${selectedMethod} (TxID: ${txId})`, reqId);
+            addPlayerFinanceLog('DEPOSIT', amount, selectedMethod, reqId);
+
+            closeModal('depositModal');
+            alert(`ငွေသွင်းမှု တောင်းဆိုပြီးပါပြီ။ Admin မှ အတည်ပြုပေးသည်အထိ စောင့်ဆိုင်းပေးပါ။`);
+        }
+
+        function submitWithdraw() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            const name = document.getElementById('withdrawName').value.trim();
+            const phone = document.getElementById('withdrawPhone').value.trim();
+
+            if (isNaN(amount) || amount < 1000) {
+                alert('အနည်းဆုံး ၁,၀၀၀ ကျပ် ထုတ်ယူရပါမည်။');
+                return;
+            }
+            if (!name) {
+                alert('အကောင့်ပိုင်ရှင် နာမည် ထည့်သွင်းပေးပါ။');
+                return;
+            }
+            if (!phone || phone.length < 9) {
+                alert('ဖုန်းနံပါတ် မှန်ကန်စွာ ရိုက်ထည့်ပါ။');
+                return;
+            }
+            if (amount > balance) {
+                alert('လက်ကျန်ငွေ မလုံလောက်ပါ။');
+                return;
+            }
+
+            const reqId = Date.now();
+            const infoDetail = `${selectedWithdrawMethod} | ${name} | ${phone}`;
+
+            addFinanceRequest('WITHDRAW', amount, infoDetail, reqId);
+            addPlayerFinanceLog('WITHDRAW', amount, infoDetail, reqId);
+
+            closeModal('withdrawModal');
+            alert(`ငွေထုတ်ယူမှု တောင်းဆိုပြီးပါပြီ။ Admin မှ စစ်ဆေးပြီး လွှဲပြောင်းပေးပါမည်။`);
+        }
+
+        function addPlayerFinanceLog(type, amount, detail, reqId) {
+            const listId = type === 'DEPOSIT' ? 'player-deposit-history-list' : 'player-withdraw-history-list';
+            const list = document.getElementById(listId);
+
+            if (list.innerHTML.includes('မှတ်တမ်း မရှိသေးပါ')) {
+                list.innerHTML = '';
+            }
+
+            const rowHtml = `<tr id="player-req-${reqId}" style="border-bottom: 1px solid #DFE6E9;">
+                <td style="padding: 6px; font-weight: 500;">${detail}</td>
+                <td style="padding: 6px; font-weight: bold;">${amount.toLocaleString()} Ks</td>
+                <td style="padding: 6px;"><span class="status-badge" style="background: #FFEAA7; color: #D63031; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">စောင့်ဆိုင်းဆဲ</span></td>
+            </tr>`;
+
+            list.innerHTML = rowHtml + list.innerHTML;
+        }
+
+        function addFinanceRequest(type, amount, info, reqId) {
+            pendingCount++;
+            updateNotifBadge(); // Update Badge Count On Admin Button
+
+            const table = document.getElementById('admin-finance-table');
+            const newRow = `<tr>
+                <td class="py-3 px-3"><span class="${type === 'DEPOSIT' ? 'bg-emerald-900/60 text-emerald-300' : 'bg-rose-900/60 text-rose-300'} px-2 py-0.5 rounded text-xs font-bold">${type}</span></td>
+                <td class="py-3 px-3 font-bold text-white">${amount.toLocaleString()} Ks</td>
+                <td class="py-3 px-3 text-xs text-slate-300">${info}</td>
+                <td class="py-3 px-3">
+                    <button onclick="approveTransaction(this, ${amount}, '${type}', ${reqId})" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1 rounded-lg transition font-semibold">Approve</button>
+                </td>
+            </tr>`;
+
+            if(table.innerHTML.includes('တောင်းဆိုမှု မရှိသေးပါ')) {
+                table.innerHTML = newRow;
+            } else {
+                table.innerHTML = newRow + table.innerHTML;
+            }
+        }
+
+        function approveTransaction(btn, amt, type, reqId) {
+            if(type === 'DEPOSIT') {
+                balance += amt;
+                if (amt >= 10000) {
+                    hasDeposited10k = true;
+                    localStorage.setItem('has_deposited_10k', 'true');
+                    showMessage('🎉 ငွေသွင်းမှု အောင်မြင်ပါသည်။ 5,000 Ks ဘောနပ်စ်အပါအဝင် ဂိမ်းစတင်ဆော့ကစားနိုင်ပါပြီ!', 'win');
+                }
+            } else {
+                balance -= amt;
+            }
+            updateBalanceDisplay();
+
+            if (pendingCount > 0) pendingCount--;
+            updateNotifBadge(); // Update Badge Count On Admin Button
+
+            btn.parentElement.parentElement.style.opacity = '0.4';
+            btn.parentElement.innerHTML = '<span class="text-xs text-emerald-400 font-bold">Approved</span>';
+
+            if (reqId) {
+                const playerRow = document.getElementById(`player-req-${reqId}`);
+                if (playerRow) {
+                    const badge = playerRow.querySelector('.status-badge');
+                    if (badge) {
+                        badge.style.background = '#E8F8F5';
+                        badge.style.color = '#27AE60';
+                        badge.innerText = 'အောင်မြင်';
+                    }
+                }
+            }
+        }
+
+        function openAdminView() {
+            const password = prompt("Admin Panel သို့ဝင်ရောက်ရန် Password ရိုက်ထည့်ပါ:");
+            if (password === "admin2027") {
+                document.getElementById('player-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+            } else if (password !== null) {
+                alert("Password မမှန်ကန်ပါ။");
+            }
+        }
+
+        function exitAdminView() {
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('player-view').classList.remove('hidden');
+        }
+
+        function toggleControlMode(mode) {
+            const inputs = document.getElementById('manual-dice-inputs');
+            if (mode === 'manual') {
+                inputs.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                inputs.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        function applyOverride(e) {
+            e.preventDefault();
+            const checkedMode = document.querySelector('input[name="controlMode"]:checked').value;
+            if(checkedMode === 'manual') {
+                forcedOutcome = parseInt(document.getElementById('forced-dice-val').value);
+                alert(`🎯 နောက်လာမည့် ရလဒ်ကို [ ${forcedOutcome} ] ဟု အဓမ္မ သတ်မှတ်လိုက်ပါပြီ!`);
+            } else {
+                forcedOutcome = null;
+                alert('🤖 Auto Random စနစ်သို့ ပြန်ပြောင်းလိုက်ပါပြီ');
+            }
+        }
+
+        function switchTab(tabId) {
+            const tabs = ['dashboard', 'control', 'finance', 'players', 'history'];
+            tabs.forEach(tab => {
+                const el = document.getElementById(`tab-${tab}`);
+                if (el) el.classList.add('hidden');
+                
+                const navBtn = document.getElementById(`nav-${tab}`);
+                if (navBtn) {
+                    navBtn.classList.remove('bg-indigo-600', 'text-white');
+                    navBtn.classList.add('text-slate-400');
+                }
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-indigo-600', 'text-white');
+                activeNav.classList.remove('text-slate-400');
+            }
+        }
+    </script>
+</body>
+</html>
